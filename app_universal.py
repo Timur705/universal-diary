@@ -85,7 +85,6 @@ def admin_required(f):
     return decorated
 
 # ========== Маршруты ==========
-
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -94,7 +93,7 @@ def login():
         resp = supabase.table('users').select('*').eq('username', username).execute()
         user = resp.data[0] if resp.data else None
         if user and check_password_hash(user['password_hash'], password):
-            session['user_id'] = user['id']  # ✅ Исправлено: id вместо user_id
+            session['user_id'] = user['user_id']          # ← исправлено
             session['username'] = user['username']
             session['full_name'] = user['full_name']
             session['class'] = user['class']
@@ -105,9 +104,6 @@ def login():
         else:
             flash('Неверное имя пользователя или пароль')
     return render_template('login.html')
-
-
-
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -161,11 +157,9 @@ def index():
         return redirect(url_for('admin_panel'))
 
     user_id = session['user_id']
-    # Получаем предметы пользователя
     subjects_resp = supabase.table('user_subjects').select('*').eq('user_id', user_id).order('title').execute()
     subjects = subjects_resp.data
 
-    # Получаем оценки с названиями предметов
     grades_resp = supabase.table('grades').select('grade_id, subject_id, date, score, user_subjects(title)').eq('user_id', user_id).order('date', desc=True).execute()
     records = []
     for g in grades_resp.data:
@@ -176,7 +170,6 @@ def index():
             'score': g['score']
         })
 
-    # Добавляем четверти
     records_with_quarter = []
     for r in records:
         quarter = get_quarter(r['date'])
@@ -191,7 +184,8 @@ def index():
                            records=records_with_quarter,
                            subjects=subjects,
                            username=session['full_name'],
-                           current_quarter=get_current_quarter())
+                           current_quarter=get_current_quarter(),
+                           is_teacher=False)   # для совместимости шаблона
 
 @app.route('/add-subject', methods=['POST'])
 @login_required
@@ -203,7 +197,6 @@ def add_subject():
     if not title:
         flash('Название предмета не может быть пустым')
         return redirect(url_for('index'))
-    # Проверка на дубликат
     existing = supabase.table('user_subjects').select('subject_id').eq('user_id', session['user_id']).eq('title', title).execute()
     if existing.data:
         flash('Такой предмет уже есть')
@@ -221,7 +214,6 @@ def delete_subject(subject_id):
     if session.get('is_admin'):
         flash('Администратор не может удалять предметы')
         return redirect(url_for('admin_panel'))
-    # Проверяем, что предмет принадлежит пользователю
     subj = supabase.table('user_subjects').select('user_id').eq('subject_id', subject_id).execute()
     if not subj.data or subj.data[0]['user_id'] != session['user_id']:
         flash('Нет прав')
@@ -247,7 +239,6 @@ def add_grade():
         if not (2 <= score <= 5):
             flash('Оценка должна быть от 2 до 5')
             return render_template('add.html', subjects=subjects, username=session['full_name'])
-        # Преобразуем дату в YYYY-MM-DD
         if '.' in date:
             d,m,y = date.split('.')
             date_sql = f"{y}-{m}-{d}"
@@ -299,14 +290,12 @@ def profile():
         if not full_name or not class_name:
             flash('ФИО и класс обязательны')
             return redirect(url_for('profile'))
-        # Обновляем ФИО и класс
         supabase.table('users').update({
             'full_name': full_name,
             'class': class_name
         }).eq('user_id', session['user_id']).execute()
         session['full_name'] = full_name
         session['class'] = class_name
-        # Смена пароля, если заполнено
         if old_password and new_password:
             if new_password != confirm_new:
                 flash('Новый пароль не совпадает')
@@ -359,7 +348,6 @@ def api_calculate():
     avg = total/cnt
     if avg >= target_threshold:
         return jsonify({'current_avg':round(avg,2),'count':cnt,'has_estimates':True,'recommendation':f'✅ Уже достигнут порог {target_threshold}! Текущий средний: {avg:.2f}'})
-    # Упрощённый расчёт (полная логика из 8В)
     if target_threshold <= 2.67:
         allowed = [5,4,3]
     else:
@@ -448,10 +436,8 @@ def api_stats():
 @app.route('/admin')
 @admin_required
 def admin_panel():
-    # Получаем всех пользователей (кроме админа)
     users_resp = supabase.table('users').select('*').order('created_at', desc=True).execute()
     users = [u for u in users_resp.data if not u.get('is_admin')]
-    # Для каждого пользователя: количество оценок, средний балл
     stats = []
     for u in users:
         grades_resp = supabase.table('grades').select('score').eq('user_id', u['user_id']).execute()
@@ -467,14 +453,12 @@ def admin_panel():
             'grades_count': count,
             'average': avg
         })
-    # Статистика по классам
     classes = {}
     for u in users:
         cls = u['class']
         if cls not in classes:
             classes[cls] = {'total_avg':0, 'students_count':0, 'total_grades':0, 'sum_avg':0}
         classes[cls]['students_count'] += 1
-        # Средний балл ученика
         student_avg = next((s['average'] for s in stats if s['user_id'] == u['user_id']), 0)
         classes[cls]['sum_avg'] += student_avg
         classes[cls]['total_grades'] += next((s['grades_count'] for s in stats if s['user_id'] == u['user_id']), 0)
@@ -488,7 +472,6 @@ def admin_panel():
 @app.route('/admin/delete-user/<int:user_id>', methods=['POST'])
 @admin_required
 def admin_delete_user(user_id):
-    # Удаляем пользователя (каскадно удалятся его предметы и оценки)
     supabase.table('users').delete().eq('user_id', user_id).eq('is_admin', False).execute()
     flash('Пользователь удалён')
     return redirect(url_for('admin_panel'))
