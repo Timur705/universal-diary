@@ -53,7 +53,7 @@
         .current-info { background: linear-gradient(135deg, #667eea20, #764ba220); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .big-number { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* 🔧 ИСПРАВЛЕННЫЙ БЛОК КНОПКИ УДАЛЕНИЯ (без дублирования) */
+        /* 🔧 ИСПРАВЛЕННЫЙ БЛОК КНОПКИ УДАЛЕНИЯ */
         .delete-all-block {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -78,9 +78,7 @@
             font-weight: bold;
             font-size: 0.9rem;
         }
-        .delete-all-btn:hover {
-            background: #c82333;
-        }
+        .delete-all-btn:hover { background: #c82333; }
 
         /* 📱 АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНОВ */
         @media (max-width: 768px) {
@@ -180,7 +178,8 @@
                 </select>
                 {% else %}
                 <div style="padding: 12px; background: #f8f9fa; border-radius: 12px; font-weight: 600;">{{ username }}</div>
-                <input type="hidden" id="student_select" value="{{ session['student_id'] }}">
+                <!-- ✅ Исправлено: используем user_id для универсального дневника -->
+                <input type="hidden" id="student_select" value="{{ session['user_id'] }}">
                 {% endif %}
             </div>
 
@@ -246,7 +245,8 @@
             </select>
             {% else %}
             <div style="padding: 12px; background: #f8f9fa; border-radius: 12px; font-weight: 600;">{{ username }}</div>
-            <input type="hidden" id="stats_student_select" value="{{ session['student_id'] }}">
+            <!-- ✅ Исправлено: используем user_id вместо student_id -->
+            <input type="hidden" id="stats_student_select" value="{{ session['user_id'] }}">
             {% endif %}
         </div>
         <div class="form-group">
