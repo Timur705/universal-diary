@@ -93,7 +93,7 @@ def login():
         resp = supabase.table('users').select('*').eq('username', username).execute()
         user = resp.data[0] if resp.data else None
         if user and check_password_hash(user['password_hash'], password):
-            session['user_id'] = user['user_id']          # ← исправлено
+            session['user_id'] = user['user_id']
             session['username'] = user['username']
             session['full_name'] = user['full_name']
             session['class'] = user['class']
@@ -185,7 +185,7 @@ def index():
                            subjects=subjects,
                            username=session['full_name'],
                            current_quarter=get_current_quarter(),
-                           is_teacher=False)   # для совместимости шаблона
+                           is_teacher=False)
 
 @app.route('/add-subject', methods=['POST'])
 @login_required
@@ -325,7 +325,19 @@ def api_calculate():
     target_threshold = float(data.get('threshold'))
     quarter = data.get('quarter')
 
+    # Защита от None и строк
+    if quarter is None or str(quarter).lower() == 'all':
+        quarter = get_current_quarter()
+    else:
+        try:
+            quarter = int(quarter)
+        except:
+            quarter = get_current_quarter()
+
     start_date, end_date = get_quarter_dates(quarter)
+    if start_date is None or end_date is None:
+        return jsonify({'error': 'Неверная четверть'}), 400
+
     start_obj = datetime.strptime(start_date, '%Y-%m-%d')
     end_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
@@ -365,7 +377,7 @@ def api_calculate():
             'recommendation': f'🎉 Уже достигнут порог {target_threshold}! Текущий средний: {current_avg:.2f}'
         })
 
-    # --- ПОЛНЫЙ ПЕРЕБОР КОМБИНАЦИЙ (как в 8В) ---
+    # --- ПОЛНЫЙ ПЕРЕБОР КОМБИНАЦИЙ ---
     if target_threshold <= 2.67:
         allowed_grades = [5, 4, 3]
     else:
@@ -469,9 +481,6 @@ def api_calculate():
         'need': {'combinations': all_combinations[:5]}
     })
 
-
-
-
 @app.route('/api/preview', methods=['POST'])
 @login_required
 def api_preview():
@@ -480,9 +489,23 @@ def api_preview():
     subject_id = data.get('subject_id')
     new_grades = data.get('new_grades')
     quarter = data.get('quarter')
+
+    # Защита от None и строк
+    if quarter is None or str(quarter).lower() == 'all':
+        quarter = get_current_quarter()
+    else:
+        try:
+            quarter = int(quarter)
+        except:
+            quarter = get_current_quarter()
+
     start_date, end_date = get_quarter_dates(quarter)
+    if start_date is None or end_date is None:
+        return jsonify({'error': 'Неверная четверть'}), 400
+
     start_obj = datetime.strptime(start_date, '%Y-%m-%d')
     end_obj = datetime.strptime(end_date, '%Y-%m-%d')
+
     resp = supabase.table('grades').select('score, date').eq('user_id', user_id).eq('subject_id', subject_id).execute()
     scores = []
     for row in resp.data:
@@ -497,15 +520,18 @@ def api_preview():
             continue
         if start_obj <= date_obj <= end_obj:
             scores.append(row['score'])
+
     cnt = len(scores)
     total = sum(scores)
+
     if cnt == 0:
-        new_avg = sum(new_grades)/len(new_grades)
-        return jsonify({'current_avg':0,'new_avg':round(new_avg,2),'change':round(new_avg,2),'has_estimates':False})
-    cur_avg = total/cnt
-    new_avg = (total+sum(new_grades))/(cnt+len(new_grades))
+        new_avg = sum(new_grades) / len(new_grades)
+        return jsonify({'current_avg': 0, 'new_avg': round(new_avg, 2), 'change': round(new_avg, 2), 'has_estimates': False})
+
+    cur_avg = total / cnt
+    new_avg = (total + sum(new_grades)) / (cnt + len(new_grades))
     change = new_avg - cur_avg
-    return jsonify({'current_avg':round(cur_avg,2),'new_avg':round(new_avg,2),'change':round(change,2),'has_estimates':True})
+    return jsonify({'current_avg': round(cur_avg, 2), 'new_avg': round(new_avg, 2), 'change': round(change, 2), 'has_estimates': True})
 
 @app.route('/api/stats', methods=['POST'])
 @login_required
@@ -535,8 +561,8 @@ def api_stats():
         resp.data = filtered
     scores = [r['score'] for r in resp.data]
     if not scores:
-        return jsonify({'count':0,'average':0,'scores':[],'dates':[]})
-    avg = sum(scores)/len(scores)
+        return jsonify({'count': 0, 'average': 0, 'scores': [], 'dates': []})
+    avg = sum(scores) / len(scores)
     dates = []
     for r in resp.data:
         if '-' in r['date']:
@@ -544,7 +570,7 @@ def api_stats():
             dates.append(f"{parts[2]}.{parts[1]}.{parts[0]}")
         else:
             dates.append(r['date'])
-    return jsonify({'count':len(scores),'average':round(avg,2),'scores':scores,'dates':dates})
+    return jsonify({'count': len(scores), 'average': round(avg, 2), 'scores': scores, 'dates': dates})
 
 # ========== Админ-панель ==========
 @app.route('/admin')
