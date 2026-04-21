@@ -88,8 +88,8 @@ def admin_required(f):
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
         resp = supabase.table('users').select('*').eq('username', username).execute()
         user = resp.data[0] if resp.data else None
         if user and check_password_hash(user['password_hash'], password):
@@ -108,8 +108,8 @@ def login():
 @app.route('/register', methods=['GET','POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
         confirm = request.form['confirm_password']
         full_name = request.form['full_name']
         class_name = request.form['class']
