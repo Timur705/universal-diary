@@ -256,20 +256,22 @@
     function closeSubjectModal() { document.getElementById('subjectModal').style.display = 'none'; }
     window.onclick = function(e) { if (e.target == document.getElementById('subjectModal')) closeSubjectModal(); if (e.target == document.getElementById('statsModal')) closeStatsModal(); }
 
-    document.getElementById('calculate_btn').addEventListener('click', async () => {
-        const subject_id = document.getElementById('calc_subject').value;
-        const target = parseFloat(document.getElementById('calc_target').value);
-        const quarter = document.getElementById('calc_quarter').value;
-        if (!subject_id) { alert('Выберите предмет'); return; }
-        const res = await fetch('/api/calculate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject_id, threshold: target, quarter })
-        });
-        const data = await res.json();
-        document.getElementById('calc_result').innerHTML = data.recommendation.replace(/\n/g, '<br>');
-        document.getElementById('calc_result').style.display = 'block';
-    });
+
+
+
+
+
+
+    document.getElementById('calculate_btn').addEventListener('click', async function() {
+    const student_id = document.getElementById('student_select').value;
+    const subject_id = document.getElementById('subject_select').value;
+    const threshold = parseFloat(thresholdInput.value);
+    let quarter = document.getElementById('calc_quarter').value;
+    quarter = parseInt(quarter, 10);   // 🆕 преобразуем в число
+    if (isNaN(quarter)) quarter = 4;   // на случай ошибки
+    // ...
+});
+
 
     document.getElementById('preview_btn').addEventListener('click', async () => {
         const subject_id = document.getElementById('calc_subject').value;
