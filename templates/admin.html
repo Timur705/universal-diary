@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { color: #667eea; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block; color: white; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-danger { background: #dc3545; }
+        .btn-warning { background: #ffc107; color: black; }
+        .card { background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        th { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .stats-grid { display: flex; gap: 20px; margin-top: 20px; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; flex: 1; }
+        .flash { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .header { flex-direction: column; gap: 15px; } table { font-size: 0.85rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👨‍🏫 Админ-панель (Универсальный дневник)</h1>
+            <div>
+                <span>👋 {{ session['full_name'] }}</span>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">📝 К журналу</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">🚪 Выйти</a>
+            </div>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>📊 Статистика по классам</h2>
+            <div class="stats-grid">
+                {% for class_name, data in class_stats.items() %}
+                <div class="stat-card">
+                    <h3>{{ class_name }}</h3>
+                    <p>Учеников: {{ data.students_count }}</p>
+                    <p>Всего оценок: {{ data.total_grades }}</p>
+                    <p>Средний балл по классу: <strong>{{ data.class_avg }}</strong></p>
+                </div>
+                {% else %}
+                <p>Нет зарегистрированных учеников</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>👥 Все пользователи</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>ФИО</th><th>Логин</th><th>Класс</th><th>Дата рег.</th><th>Оценок</th><th>Средний</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u['full_name'] }}</td>
+                            <td>{{ u['username'] }}</td>
+                            <td>{{ u['class'] }}</td>
+                            <td>{{ u['created_at'] }}</td>
+                            <td>{{ u['grades_count'] }}</td>
+                            <td>{{ u['average'] }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('admin_delete_user_grades', user_id=u['user_id']) }}" style="display:inline-block;">
+                                    <button type="submit" class="btn btn-warning" style="padding: 4px 8px;" onclick="return confirm('Удалить все оценки пользователя?');">🗑 Оценки</button>
+                                </form>
+                                <form method="post" action="{{ url_for('admin_delete_user', user_id=u['user_id']) }}" style="display:inline-block;">
+                                    <button type="submit" class="btn btn-danger" style="padding: 4px 8px;" onclick="return confirm('Удалить пользователя (аккаунт, предметы, оценки)?');">❌ Удалить</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="7">Нет пользователей</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
