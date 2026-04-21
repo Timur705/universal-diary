@@ -17,8 +17,8 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6; }
         th { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .stats-grid { display: flex; gap: 20px; margin-top: 20px; }
-        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; flex: 1; }
+        .stats-grid { display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 10px; text-align: center; min-width: 200px; }
         .flash { background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
         @media (max-width: 768px) { .header { flex-direction: column; gap: 15px; } table { font-size: 0.85rem; } }
     </style>

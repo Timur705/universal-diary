@@ -39,14 +39,14 @@
             <div class="form-group">
                 <label>Оценка:</label>
                 <select name="score" required>
-                    <option value="">— Выберите —</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
+                    <option value="">— Выберите оценку —</option>
+                    <option value="2">2 (неудовлетворительно)</option>
+                    <option value="3">3 (удовлетворительно)</option>
+                    <option value="4">4 (хорошо)</option>
+                    <option value="5">5 (отлично)</option>
                 </select>
             </div>
-            <button type="submit">💾 Добавить</button>
+            <button type="submit">💾 Добавить оценку</button>
         </form>
         <div class="back"><a href="{{ url_for('index') }}">← Назад</a></div>
     </div>
