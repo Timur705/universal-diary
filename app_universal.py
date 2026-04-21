@@ -324,9 +324,11 @@ def api_calculate():
     subject_id = data.get('subject_id')
     target_threshold = float(data.get('threshold'))
     quarter = data.get('quarter')
+
     start_date, end_date = get_quarter_dates(quarter)
     start_obj = datetime.strptime(start_date, '%Y-%m-%d')
     end_obj = datetime.strptime(end_date, '%Y-%m-%d')
+
     resp = supabase.table('grades').select('score, date').eq('user_id', user_id).eq('subject_id', subject_id).execute()
     scores = []
     for row in resp.data:
@@ -341,22 +343,134 @@ def api_calculate():
             continue
         if start_obj <= date_obj <= end_obj:
             scores.append(row['score'])
-    cnt = len(scores)
-    total = sum(scores)
-    if cnt == 0:
-        return jsonify({'current_avg':0,'count':0,'has_estimates':False,'recommendation':'📝 Нет оценок'})
-    avg = total/cnt
-    if avg >= target_threshold:
-        return jsonify({'current_avg':round(avg,2),'count':cnt,'has_estimates':True,'recommendation':f'✅ Уже достигнут порог {target_threshold}! Текущий средний: {avg:.2f}'})
+
+    current_count = len(scores)
+    current_sum = sum(scores)
+
+    if current_count == 0:
+        return jsonify({
+            'current_avg': 0,
+            'count': 0,
+            'has_estimates': False,
+            'recommendation': '📝 Пока нет оценок в этой четверти. Добавьте первую оценку!'
+        })
+
+    current_avg = current_sum / current_count
+
+    if current_avg >= target_threshold:
+        return jsonify({
+            'current_avg': round(current_avg, 2),
+            'count': current_count,
+            'has_estimates': True,
+            'recommendation': f'🎉 Уже достигнут порог {target_threshold}! Текущий средний: {current_avg:.2f}'
+        })
+
+    # --- ПОЛНЫЙ ПЕРЕБОР КОМБИНАЦИЙ (как в 8В) ---
     if target_threshold <= 2.67:
-        allowed = [5,4,3]
+        allowed_grades = [5, 4, 3]
     else:
-        allowed = [5,4]
-    for n in range(1,16):
-        need = target_threshold*(cnt+n)-total
-        if 2*n <= need <= 5*n:
-            return jsonify({'current_avg':round(avg,2),'count':cnt,'has_estimates':True,'recommendation':f'🎯 Нужно ещё {n} оценка(и) для порога {target_threshold}'})
-    return jsonify({'current_avg':round(avg,2),'count':cnt,'has_estimates':True,'recommendation':'💪 Даже при всех пятёрках невозможно достичь порога'})
+        allowed_grades = [5, 4]
+
+    all_combinations = []
+
+    for new_count in range(1, 16):
+        needed_total = target_threshold * (current_count + new_count)
+        needed_sum_from_new = max(0, needed_total - current_sum)
+
+        max_possible = 5 * new_count
+        min_possible = min(allowed_grades) * new_count
+
+        if needed_sum_from_new > max_possible:
+            continue
+        if needed_sum_from_new <= min_possible:
+            needed_sum_from_new = min_possible
+
+        combos = []
+
+        def generate(remaining, current, current_sum_combo):
+            if remaining == 0:
+                if current_sum_combo >= needed_sum_from_new:
+                    cnt = {5: 0, 4: 0, 3: 0, 2: 0}
+                    for g in current:
+                        cnt[g] += 1
+                    combos.append((cnt[5], cnt[4], cnt[3], cnt[2]))
+                return
+            for grade in allowed_grades:
+                max_possible_remaining = grade + 5 * (remaining - 1)
+                if current_sum_combo + max_possible_remaining < needed_sum_from_new:
+                    continue
+                generate(remaining - 1, current + [grade], current_sum_combo + grade)
+
+        generate(new_count, [], 0)
+
+        if combos:
+            unique = []
+            for c in combos:
+                if c not in unique:
+                    unique.append(c)
+            unique.sort(key=lambda x: (-x[1], -x[0]))
+            for combo in unique:
+                all_combinations.append((new_count, combo[0], combo[1], combo[2], combo[3]))
+
+    if not all_combinations:
+        return jsonify({
+            'current_avg': round(current_avg, 2),
+            'count': current_count,
+            'has_estimates': True,
+            'recommendation': f'💪 Даже при всех пятёрках невозможно достичь порога {target_threshold} в этой четверти.'
+        })
+
+    only_fours = []
+    mixed = []
+    only_fives = []
+
+    for new_count, fives, fours, threes, twos in all_combinations:
+        if fives == 0 and fours > 0 and threes == 0:
+            only_fours.append((new_count, fives, fours))
+        elif fives > 0 and fours > 0:
+            mixed.append((new_count, fives, fours))
+        elif fives > 0 and fours == 0 and threes == 0:
+            only_fives.append((new_count, fives, fours))
+
+    min_only_fours = min(only_fours, key=lambda x: x[0]) if only_fours else None
+    min_mixed = min(mixed, key=lambda x: x[0]) if mixed else None
+    min_only_fives = min(only_fives, key=lambda x: x[0]) if only_fives else None
+
+    quarter_names = {1: '1', 2: '2', 3: '3', 4: '4'}
+    quarter_text = quarter_names.get(quarter, 'текущей')
+
+    recommendation = f"📊 В {quarter_text} четверти\n\n"
+    recommendation += f"📈 Текущий средний: {current_avg:.2f}\n\n"
+
+    if min_only_fours:
+        fours_count = min_only_fours[2]
+        fours_list = ", ".join(["4"] * fours_count)
+        recommendation += f"✅ Только 4-ки\n• {fours_list}\n\n"
+
+    if min_mixed:
+        mixed_fours = min_mixed[2]
+        mixed_fives = min_mixed[1]
+        mixed_list = []
+        mixed_list.extend(["4"] * mixed_fours)
+        mixed_list.extend(["5"] * mixed_fives)
+        mixed_list_str = ", ".join(mixed_list)
+        recommendation += f"✅ 4-ки и 5-ки\n• {mixed_list_str}\n\n"
+
+    if min_only_fives:
+        fives_count = min_only_fives[1]
+        fives_list = ", ".join(["5"] * fives_count)
+        recommendation += f"⭐ Только 5-ки\n• {fives_list}\n"
+
+    return jsonify({
+        'current_avg': round(current_avg, 2),
+        'count': current_count,
+        'has_estimates': True,
+        'recommendation': recommendation,
+        'need': {'combinations': all_combinations[:5]}
+    })
+
+
+
 
 @app.route('/api/preview', methods=['POST'])
 @login_required
