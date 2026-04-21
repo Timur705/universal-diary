@@ -11,17 +11,19 @@
         .container { max-width: 1400px; margin: 0 auto; }
         .header { background: white; border-radius: 20px; padding: 20px 30px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         body.dark .header { background: #1e1e2f; color: white; }
-        .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .theme-toggle { background: #f0f0f0; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 1rem; transition: all 0.3s; }
+        .header h1 { font-size: 1.8rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body.dark .header h1 { background: linear-gradient(135deg, #a8c0ff, #3f2b96); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .theme-toggle { background: #f0f0f0; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-size: 1rem; }
         body.dark .theme-toggle { background: #2d2d44; color: white; }
         .stats-link { background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-decoration: none; padding: 10px 25px; border-radius: 30px; font-weight: 600; cursor: pointer; border: none; font-size: 1rem; }
         .dashboard { display: flex; gap: 25px; flex-wrap: wrap; }
         .journal { flex: 2; min-width: 500px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .calculator { flex: 1; min-width: 320px; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); align-self: start; }
         body.dark .journal, body.dark .calculator { background: #1e1e2f; color: #e0e0e0; }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; width: 100%; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
         .btn-add { display: inline-block; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; margin-bottom: 20px; transition: transform 0.2s; }
-        .btn-secondary { background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 12px; cursor: pointer; }
+        .btn-secondary { background: #6c757d; margin-top: 10px; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 1rem; font-weight: 500; }
@@ -43,6 +45,7 @@
         .grade-3 { color: #ffc107; }
         .grade-2 { color: #dc3545; }
         .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .btn-delete:hover { background: #c82333; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; }
         select, input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 1rem; }
@@ -50,7 +53,9 @@
         .preview-block { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px; }
         body.dark .preview-block { background: #2d2d44; }
         .result { margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 12px; font-size: 1.1rem; line-height: 1.6; font-weight: 500; color: #1a1a1a; white-space: pre-line; }
+        .result strong { font-weight: 800; color: #2e7d32; }
         body.dark .result { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #ffffff; }
+        body.dark .result strong { color: #ffd700; }
         .flash { background: #d4edda; color: #155724; padding: 12px; border-radius: 12px; margin-bottom: 20px; }
         body.dark .flash { background: #1b5e20; color: #a5d6a7; }
         .current-info { background: linear-gradient(135deg, #667eea20, #764ba220); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
@@ -58,11 +63,21 @@
         .delete-all-block { background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px 15px; margin: 15px 0; text-align: center; border-radius: 8px; }
         body.dark .delete-all-block { background: #2d2d00; border-color: #666600; color: #ffcc80; }
         .delete-all-btn { background: #dc3545; color: white; border: none; padding: 6px 15px; border-radius: 20px; margin-top: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .delete-all-btn:hover { background: #c82333; }
+        .subject-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .subject-item { background: #f0f0f0; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; }
+        body.dark .subject-item { background: #2d2d44; }
+        .subject-item form { display: inline; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        body.dark .modal-content { background: #1e1e2f; color: #e0e0e0; }
+        .btn-close { background: #6c757d; margin-top: 20px; }
         @media (max-width: 768px) {
             body { padding: 10px; overflow-x: hidden; }
             .container { padding: 0; max-width: 100%; }
             .header { flex-direction: column; text-align: center; padding: 15px; }
             .header-actions { justify-content: center; flex-wrap: wrap; gap: 8px; }
+            .header-actions button, .header-actions a { font-size: 0.85rem; padding: 6px 12px; }
             .dashboard { flex-direction: column; gap: 15px; }
             .journal { min-width: 100% !important; width: 100%; padding: 15px; overflow: hidden; }
             .calculator { min-width: 100%; padding: 15px; }
@@ -71,6 +86,7 @@
             table { min-width: 600px; width: auto; font-size: 0.85rem; }
             th, td { padding: 8px 10px; white-space: nowrap; }
             .delete-all-block { padding: 10px; margin: 15px 0; }
+            .delete-all-block button { font-size: 0.85rem; padding: 6px 12px; }
             .calculator h2 { font-size: 1.3rem; }
             .form-group label { font-size: 0.9rem; }
             select, input { font-size: 16px; padding: 8px; }
@@ -79,14 +95,6 @@
             .big-number { font-size: 1.5rem; }
             .modal-content { padding: 20px; width: 95%; }
         }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; border-radius: 20px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        body.dark .modal-content { background: #1e1e2f; color: #e0e0e0; }
-        .btn-close { background: #6c757d; margin-top: 20px; }
-        .subject-list { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .subject-item { background: #e9ecef; padding: 5px 12px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; }
-        body.dark .subject-item { background: #2d2d44; }
-        .subject-item form { display: inline; }
     </style>
 </head>
 <body>
@@ -95,8 +103,8 @@
         <h1>📚 Универсальный дневник</h1>
         <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
             <span style="font-weight: 600;">👋 Привет, {{ username }}!</span>
-            <a href="{{ url_for('profile') }}" class="btn-secondary">👤 Профиль</a>
             <button class="theme-toggle" onclick="toggleTheme()">🌙 Тёмная тема</button>
+            <a href="{{ url_for('profile') }}" class="btn-primary" style="width: auto; padding: 8px 16px;">👤 Профиль</a>
             <button onclick="openStatsModal()" class="stats-link">📊 Статистика</button>
             <a href="{{ url_for('logout') }}" style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 30px; text-decoration: none;">🚪 Выйти</a>
         </div>
@@ -117,15 +125,15 @@
         <div class="journal">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <a href="{{ url_for('add_grade') }}" class="btn-add">➕ Добавить оценку</a>
-                <button class="btn-secondary" onclick="openSubjectModal()">➕ Добавить предмет</button>
+                <button class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="openSubjectModal()">📚 Добавить предмет</button>
             </div>
+            <h3>Мои предметы:</h3>
             <div class="subject-list">
-                <strong>Мои предметы:</strong>
                 {% for subj in subjects %}
                 <div class="subject-item">
                     {{ subj['title'] }}
-                    <form method="post" action="{{ url_for('delete_subject', subject_id=subj['subject_id']) }}" style="display: inline;" onsubmit="return confirm('Удалить предмет «{{ subj['title'] }}» и все оценки по нему?');">
-                        <button type="submit" style="background: none; border: none; color: red; cursor: pointer; font-size: 1rem;">🗑</button>
+                    <form method="post" action="{{ url_for('delete_subject', subject_id=subj['subject_id']) }}" onsubmit="return confirm('Удалить предмет «{{ subj['title'] }}» и все оценки по нему?');">
+                        <button type="submit" class="btn-delete" style="padding: 2px 6px; font-size: 0.7rem;">🗑</button>
                     </form>
                 </div>
                 {% else %}
@@ -153,19 +161,19 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="text-align: center; color: #666;">📭 Нет записей. Добавьте первую оценку!</p>
+                <p style="text-align: center; color: #666;">📭 Нет оценок. Добавьте первую!</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="calculator">
-            <h2>🎯 Калькулятор цели</h2>
+            <h2 style="margin-bottom: 20px;">🎯 Калькулятор цели</h2>
             <div class="form-group">
                 <label>📖 Предмет:</label>
                 <select id="calc_subject">
                     <option value="">— Выберите предмет —</option>
-                    {% for subj in subjects %}
-                    <option value="{{ subj['subject_id'] }}">{{ subj['title'] }}</option>
+                    {% for s in subjects %}
+                    <option value="{{ s['subject_id'] }}">{{ s['title'] }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -186,17 +194,23 @@
                     <option value="4" selected>4 четверть</option>
                 </select>
             </div>
+            <div class="current-info" id="current_info" style="display: none;">
+                <div>📊 Текущий средний за <span id="quarter_text">{{ current_quarter }}-ю четверть</span>:</div>
+                <div class="big-number" id="current_avg_display">—</div>
+                <div>📝 Оценок: <span id="grades_count">0</span></div>
+            </div>
             <button id="calculate_btn" class="btn-primary">🚀 Рассчитать</button>
             <div id="calc_result" class="result" style="display: none;"></div>
 
-            <hr>
+            <hr style="margin: 20px 0;">
             <h3>🔮 Что будет, если добавить оценку?</h3>
             <div class="form-group">
                 <label>➕ Несколько оценок (через запятую):</label>
-                <input type="text" id="preview_grades" placeholder="Например: 4, 4, 5">
+                <input type="text" id="preview_grades" placeholder="Например: 4, 4, 5 или 4,5,5">
+                <small style="font-size: 12px; color: #666;">Введите оценки через запятую: 2,3,4,5</small>
             </div>
             <button id="preview_btn" class="btn-primary" style="background: linear-gradient(135deg, #28a745, #20c997);">📈 Показать изменение</button>
-            <div id="preview_result" class="result" style="display: none;"></div>
+            <div id="preview_result" class="preview-block" style="display: none;"></div>
         </div>
     </div>
 </div>
@@ -208,8 +222,8 @@
             <label>Предмет:</label>
             <select id="stats_subject">
                 <option value="">— Выберите предмет —</option>
-                {% for subj in subjects %}
-                <option value="{{ subj['subject_id'] }}">{{ subj['title'] }}</option>
+                {% for s in subjects %}
+                <option value="{{ s['subject_id'] }}">{{ s['title'] }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -223,16 +237,18 @@
                 <option value="all">Весь год</option>
             </select>
         </div>
-        <button id="stats_show_btn" class="btn-primary">Показать</button>
-        <div id="stats_result" style="display: none;"></div>
+        <button id="stats_btn" class="btn-primary">Показать</button>
+        <div id="stats_result" style="display: none;">
+            <p id="stats_info"></p>
+            <div id="stats_list"></div>
+        </div>
         <button onclick="closeStatsModal()" class="btn-primary btn-close">Закрыть</button>
     </div>
 </div>
 
 <div id="subjectModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeSubjectModal()">&times;</span>
-        <h3>➕ Добавить новый предмет</h3>
+        <h2>➕ Добавить новый предмет</h2>
         <form method="post" action="{{ url_for('add_subject') }}">
             <div class="form-group">
                 <label>Название предмета:</label>
@@ -240,6 +256,7 @@
             </div>
             <button type="submit" class="btn-primary">Добавить</button>
         </form>
+        <button onclick="closeSubjectModal()" class="btn-primary btn-close" style="margin-top: 10px;">Закрыть</button>
     </div>
 </div>
 
@@ -254,60 +271,86 @@
     function closeStatsModal() { document.getElementById('statsModal').style.display = 'none'; }
     function openSubjectModal() { document.getElementById('subjectModal').style.display = 'flex'; }
     function closeSubjectModal() { document.getElementById('subjectModal').style.display = 'none'; }
-    window.onclick = function(e) { if (e.target == document.getElementById('subjectModal')) closeSubjectModal(); if (e.target == document.getElementById('statsModal')) closeStatsModal(); }
+    window.onclick = function(e) {
+        if (e.target === document.getElementById('statsModal')) closeStatsModal();
+        if (e.target === document.getElementById('subjectModal')) closeSubjectModal();
+    }
 
-
-
-
-
-
-
-    document.getElementById('calculate_btn').addEventListener('click', async function() {
-    const student_id = document.getElementById('student_select').value;
-    const subject_id = document.getElementById('subject_select').value;
-    const threshold = parseFloat(thresholdInput.value);
-    let quarter = document.getElementById('calc_quarter').value;
-    quarter = parseInt(quarter, 10);   // 🆕 преобразуем в число
-    if (isNaN(quarter)) quarter = 4;   // на случай ошибки
-    // ...
-});
-
-
-    document.getElementById('preview_btn').addEventListener('click', async () => {
+    async function loadCurrentAvg() {
         const subject_id = document.getElementById('calc_subject').value;
-        const quarter = document.getElementById('calc_quarter').value;
-        const gradesInput = document.getElementById('preview_grades').value;
-        if (!subject_id) { alert('Выберите предмет'); return; }
-        if (!gradesInput) { alert('Введите оценки через запятую'); return; }
-        const newGrades = gradesInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g>=2 && g<=5);
-        if (newGrades.length === 0) { alert('Введите корректные оценки (2-5)'); return; }
-        const res = await fetch('/api/preview', {
+        if (!subject_id) { document.getElementById('current_info').style.display = 'none'; return; }
+        const response = await fetch('/api/calculate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject_id, new_grades: newGrades, quarter })
+            body: JSON.stringify({ subject_id: parseInt(subject_id), threshold: 5, quarter: currentQuarter })
         });
-        const data = await res.json();
-        document.getElementById('preview_result').innerHTML = `📊 Текущий средний: ${data.current_avg}<br>✨ Новый средний: ${data.new_avg}<br>📈 Изменение: ${data.change > 0 ? '+' : ''}${data.change}`;
-        document.getElementById('preview_result').style.display = 'block';
+        const data = await response.json();
+        document.getElementById('current_info').style.display = 'block';
+        document.getElementById('current_avg_display').innerHTML = data.current_avg || 0;
+        document.getElementById('grades_count').innerHTML = data.count || 0;
+    }
+    document.getElementById('calc_subject').addEventListener('change', loadCurrentAvg);
+
+    document.getElementById('calculate_btn').addEventListener('click', async function() {
+        const subject_id = document.getElementById('calc_subject').value;
+        const target = parseFloat(document.getElementById('calc_target').value);
+        let quarter = document.getElementById('calc_quarter').value;
+        quarter = parseInt(quarter, 10);
+        if (isNaN(quarter)) quarter = 4;
+        if (!subject_id) { alert('Выберите предмет'); return; }
+        const response = await fetch('/api/calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject_id: parseInt(subject_id), threshold: target, quarter: quarter })
+        });
+        const data = await response.json();
+        const resultDiv = document.getElementById('calc_result');
+        resultDiv.innerHTML = data.recommendation.replace(/\n/g, '<br>');
+        resultDiv.style.display = 'block';
     });
 
-    document.getElementById('stats_show_btn').addEventListener('click', async () => {
+    document.getElementById('preview_btn').addEventListener('click', async function() {
+        const subject_id = document.getElementById('calc_subject').value;
+        let quarter = document.getElementById('calc_quarter').value;
+        quarter = parseInt(quarter, 10);
+        if (isNaN(quarter)) quarter = 4;
+        const gradesInput = document.getElementById('preview_grades').value;
+        if (!subject_id) { alert('Выберите предмет'); return; }
+        if (!gradesInput.trim()) { alert('Введите оценки через запятую'); return; }
+        const newGrades = gradesInput.split(',').map(g => parseInt(g.trim())).filter(g => !isNaN(g) && g >= 2 && g <= 5);
+        if (newGrades.length === 0) { alert('Введите корректные оценки (2-5)'); return; }
+        const response = await fetch('/api/preview', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subject_id: parseInt(subject_id), new_grades: newGrades, quarter: quarter })
+        });
+        const data = await response.json();
+        const previewDiv = document.getElementById('preview_result');
+        previewDiv.innerHTML = `📊 Текущий средний: ${data.current_avg}<br>✨ Новый средний: ${data.new_avg}<br>📈 Изменение: ${data.change > 0 ? '+' : ''}${data.change}`;
+        previewDiv.style.display = 'block';
+    });
+
+    document.getElementById('stats_btn').addEventListener('click', async function() {
         const subject_id = document.getElementById('stats_subject').value;
         const quarter = document.getElementById('stats_quarter').value;
         if (!subject_id) { alert('Выберите предмет'); return; }
-        const res = await fetch('/api/stats', {
+        const response = await fetch('/api/stats', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ subject_id, quarter })
+            body: JSON.stringify({ subject_id: parseInt(subject_id), quarter: quarter })
         });
-        const data = await res.json();
-        let html = `<p><strong>Количество оценок:</strong> ${data.count}</p><p><strong>Средний балл:</strong> ${data.average}</p>`;
-        if (data.scores && data.scores.length) {
-            html += '<h4>Список оценок:</h4><ul>';
-            for (let i=0; i<data.scores.length; i++) html += `<li>${data.dates[i]} — ${data.scores[i]}</li>`;
-            html += '</ul>';
+        const data = await response.json();
+        document.getElementById('stats_info').innerHTML = `📊 Количество оценок: ${data.count}<br>📈 Средний балл: <strong>${data.average}</strong>`;
+        if (data.scores && data.scores.length > 0) {
+            let listHtml = '<h4>Список оценок:</h4><ul>';
+            for (let i = 0; i < data.scores.length; i++) {
+                listHtml += `<li>${data.dates[i]} — ${data.scores[i]}</li>`;
+            }
+            listHtml += '</ul>';
+            document.getElementById('stats_list').innerHTML = listHtml;
+        } else {
+            document.getElementById('stats_list').innerHTML = '<p>Нет оценок</p>';
         }
-        document.getElementById('stats_result').innerHTML = html;
         document.getElementById('stats_result').style.display = 'block';
     });
 </script>
