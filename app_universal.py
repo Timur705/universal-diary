@@ -85,6 +85,7 @@ def admin_required(f):
     return decorated
 
 # ========== Маршруты ==========
+
 @app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -93,7 +94,7 @@ def login():
         resp = supabase.table('users').select('*').eq('username', username).execute()
         user = resp.data[0] if resp.data else None
         if user and check_password_hash(user['password_hash'], password):
-            session['user_id'] = user['user_id']
+            session['user_id'] = user['id']  # ✅ Исправлено: id вместо user_id
             session['username'] = user['username']
             session['full_name'] = user['full_name']
             session['class'] = user['class']
@@ -104,6 +105,9 @@ def login():
         else:
             flash('Неверное имя пользователя или пароль')
     return render_template('login.html')
+
+
+
 
 @app.route('/register', methods=['GET','POST'])
 def register():
